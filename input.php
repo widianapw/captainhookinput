@@ -40,24 +40,27 @@ function process_message($message)
 		$chatid = $message_data["chat"]["id"];
 		$text = $message_data["text"];
 		mysqli_query($koneksi, "INSERT INTO tb_inbox VALUES (null,'$chatid','$text','msg','1',NOW())");
+
 		$fetch =  mysqli_query($koneksi, "SELECT MAX(id_inbox) as id_inbox FROM tb_inbox");
 		$id = mysqli_fetch_assoc($fetch);
 		$id_inbox =  $id["id_inbox"];
-		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','$text','msg','1', NOW())");
-		mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox ");
+		$msg = mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','$text','msg','1', NOW())");
+		if ($msg) {
+			mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox ");	
+		}
+		
 	}
 
 	elseif (isset($message_data["photo"])) {
 		$chatid = $message_data["chat"]["id"];
 		$photo_id = $message_data["photo"]["0"]["file_id"];
-
 		mysqli_query($koneksi, "INSERT INTO tb_inbox VALUES (null,'$chatid','$photo_id','img','1',NOW())");
 		$fetch =  mysqli_query($koneksi, "SELECT MAX(id_inbox) as id_inbox FROM tb_inbox");
 		$id = mysqli_fetch_assoc($fetch);
 		$id_inbox =  $id["id_inbox"];
-		
-		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','https://3.bp.blogspot.com/-IUyIJZ9hT_Y/WLtq_FlHT4I/AAAAAAAAF8o/EWrqnNUTWBQ_H2Jxv9MRv-zPVLv1r26mgCLcB/s1600/logo-teknologi-informasi-universitas-udayana-ti-unud-jhonarendra.png','img','1', NULL)");
+		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','$photo_id','img','1', NOW())");
 		mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox ");
+
 	}
 	elseif (isset($message_data["location"])) {
 		$chatid = $message_data["chat"]["id"];
@@ -66,7 +69,7 @@ function process_message($message)
 		$id = mysqli_fetch_assoc($fetch);
 		$id_inbox =  $id["id_inbox"];
 		echo $chatid;
-		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','https://goo.gl/maps/5Nu9WB2tbzvNRTEn9','loc','1', NULL)");
+		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','https://goo.gl/maps/5Nu9WB2tbzvNRTEn9','loc','1', NOW())");
 		mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox ");
 	}
 	elseif (isset($message_data["document"])) {
@@ -77,9 +80,12 @@ function process_message($message)
 		$id = mysqli_fetch_assoc($fetch);
 		$id_inbox =  $id["id_inbox"];
 		echo $chatid;
-		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','http://ikd.ugm.ac.id/files/download/CV.doc','file','1', NULL)");
+		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','http://ikd.ugm.ac.id/files/download/CV.doc','file','1', NOW())");
 		mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox ");	
 	}
+
+
+	
 	return $updateid;
 }
 
@@ -87,7 +93,7 @@ function process_one()
 {
 	global $debug;
 	$update_id = 0;
-	echo "-";
+	
 
 	if (file_exists("last_update_id"))
 		$update_id = (int)file_get_contents("last_update_id");
@@ -102,7 +108,7 @@ function process_one()
 
 	foreach ($updates as $message)
 	{
-		echo '+';
+		echo '-';
 		$update_id = process_message($message);
 	}
 	file_put_contents("last_update_id", $update_id + 1);

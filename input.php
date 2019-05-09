@@ -117,13 +117,13 @@ function process_one()
 
 
 
-process_one();
+// process_one();
 
 
 
-// $entityBody = file_get_contents('php://input');
-// $pesanditerima = json_decode($entityBody, true);
-// process_message($pesanditerima);
+$entityBody = file_get_contents('php://input');
+$pesanditerima = json_decode($entityBody, true);
+process_message($pesanditerima);
 
 
 ?>

@@ -116,10 +116,10 @@ function process_one()
 
 
 
-while (true) {
-	process_one();
-	sleep(1);
-}
+
+process_one();
+
+
 
 // $entityBody = file_get_contents('php://input');
 // $pesanditerima = json_decode($entityBody, true);

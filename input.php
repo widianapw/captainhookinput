@@ -86,6 +86,18 @@ function process_message($message)
 		mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox ");	
 	}
 
+	elseif (isset($message_data["sticker"])) {
+		$chatid = $message_data["chat"]["id"];
+		$file_id = $message_data["sticker"]["file_id"];
+		mysqli_query($koneksi, "INSERT INTO tb_inbox VALUES (null,'$chatid','$file_id','stc','1',NOW())");
+		$fetch =  mysqli_query($koneksi, "SELECT MAX(id_inbox) as id_inbox FROM tb_inbox");
+		$id = mysqli_fetch_assoc($fetch);
+		$id_inbox =  $id["id_inbox"];
+		echo $chatid;
+		mysqli_query($koneksi, "INSERT INTO tb_outbox VALUES (null,'$id_inbox','$chatid','$file_id','stc','1', NOW())");
+		mysqli_query($koneksi, "UPDATE tb_inbox set flag = '2' where id_inbox = $id_inbox");	
+	}
+
 
 	
 	return $updateid;

@@ -2,6 +2,8 @@
 
 include 'db_con.php';
 
+global $koneksi;
+$koneksi->set_charset('utf8mb4');
 $TOKEN = "821904545:AAHQDMbWf46pc1e77g_0hqQOJgj4eiR3TYA";
 $usernamebot= "@cpthook_bot";
 
